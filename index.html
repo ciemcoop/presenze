@@ -43,7 +43,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .err{color:#c0392b;font-size:13px;margin-top:8px;text-align:center}
 .card{background:#fff;border:1px solid #eee;border-radius:10px;padding:0;margin-bottom:.75rem}
 .day-table{width:100%;border-collapse:collapse;font-size:12px}
-.day-table th{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.04em;padding:8px 4px;border-bottom:1px solid #eee;text-align:center;font-weight:600;white-space:nowrap;background:#fafafa;position:sticky;top:237px;z-index:9;}
+.day-table th{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.04em;padding:8px 4px;border-bottom:1px solid #eee;text-align:center;font-weight:600;white-space:nowrap;background:#fafafa;}
+.day-table thead{position:sticky;top:0;z-index:9;background:#fafafa;}
 .day-table th:first-child{text-align:left;padding-left:10px;min-width:76px}
 .day-table td{padding:5px 3px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
 .day-table td:first-child{padding-left:10px}
@@ -147,10 +148,13 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     <span id="status-txt">Bozza — le modifiche si salvano in automatico</span>
   </div>
   <div class="srow" id="sum-row"></div>
-  <div class="card">
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+  <div class="card" style="overflow:hidden">
+    <table class="day-table" style="width:100%;border-collapse:collapse">
+      <thead id="thead-wrap" style="display:table;width:100%;table-layout:fixed"><tr id="thead-row"></tr></thead>
+    </table>
+    <div style="overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch">
     <table class="day-table">
-      <thead><tr id="thead-row"></tr></thead>
+      <thead style="visibility:hidden;height:0"><tr id="thead-row-ghost"></tr></thead>
       <tbody id="tbody-main"></tbody>
     </table>
     </div>
@@ -416,13 +420,17 @@ function renderCalendario(blk, D) {
   const tipo = utente.tipo;
   const thead = document.getElementById('thead-row');
 
+  let theadHTML = '';
   if(tipo==='indeterminato'){
-    thead.innerHTML='<th>Giorno</th><th>Lav.</th><th>Fer./Perm.</th><th>Mal.</th><th>Str.</th><th>km</th><th>Destinazione</th>';
+    theadHTML='<th>Giorno</th><th>Lav.</th><th>Fer./Perm.</th><th>Mal.</th><th>Str.</th><th>km</th><th>Destinazione</th>';
   } else if(tipo==='av_simple'){
-    thead.innerHTML='<th>Giorno</th><th>Ore lav.</th><th>km</th><th>Destinazione</th>';
+    theadHTML='<th>Giorno</th><th>Ore lav.</th><th>km</th><th>Destinazione</th>';
   } else {
-    thead.innerHTML='<th>Giorno</th><th>Ore lav.</th><th>Straord.</th><th>Notturne</th>';
+    theadHTML='<th>Giorno</th><th>Ore lav.</th><th>Straord.</th><th>Notturne</th>';
   }
+  thead.innerHTML=theadHTML;
+  const ghost=document.getElementById('thead-row-ghost');
+  if(ghost) ghost.innerHTML=theadHTML;
 
   const tbody = document.getElementById('tbody-main'); tbody.innerHTML='';
   let tL=0,tF=0,tM=0,tS=0,tN=0,tKm=0;
