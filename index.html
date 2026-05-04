@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>CIEM COOP — Presenze</title>
 <!-- v2.1 -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -49,13 +49,15 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .day-table th:first-child{text-align:left;padding-left:10px;}
 .day-table th:first-child{text-align:left;padding-left:10px;min-width:76px}
 .day-table td{padding:5px 3px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
-.day-table td:first-child{padding-left:10px}
+.day-table td:first-child{padding-left:10px;position:sticky;left:0;background:#fff;z-index:1;}
+.day-table tr.off td:first-child{background:#fff;}
+.day-table th:first-child{position:sticky;left:0;z-index:91;text-align:left;padding-left:10px;min-width:76px;}
 .day-table tr:last-child td{border-bottom:none}
 .day-table tr.off td{color:#bbb}
 .day-table tr.off td:first-child{color:#ccc}
-.ni{width:46px;padding:6px 2px;font-size:12px;text-align:center;border-radius:6px;border:1px solid #e0e0e0;background:#fff;color:#1a1a1a}
+.ni{width:46px;padding:6px 2px;font-size:16px;text-align:center;border-radius:6px;border:1px solid #e0e0e0;background:#fff;color:#1a1a1a}
 .ni.auto{background:#f5f5f5;color:#888;border-color:transparent}
-.di{width:84px;padding:5px 5px;font-size:11px;border-radius:6px;border:1px solid #e0e0e0;background:#fff;color:#1a1a1a}
+.di{width:84px;padding:5px 5px;font-size:16px;border-radius:6px;border:1px solid #e0e0e0;background:#fff;color:#1a1a1a}
 .fest-b{font-size:9px;background:#fff3cd;color:#856404;padding:1px 5px;border-radius:4px;vertical-align:middle;margin-left:2px;display:inline-block}
 .modal-bg{background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;position:fixed;top:0;left:0;right:0;bottom:0;z-index:100}
 .modal-bg.show{display:flex}
@@ -807,6 +809,13 @@ function exportGoogleSheets(){
     }).catch(()=>{alert('Copia manuale: apri sheets.new e incolla i dati.')});
   }
 }
+
+// Seleziona tutto il testo al focus su input numerici
+document.addEventListener('focusin', function(e){
+  if(e.target && e.target.type === 'number'){
+    setTimeout(()=>{ e.target.select(); }, 50);
+  }
+});
 </script>
 </body>
 </html>
