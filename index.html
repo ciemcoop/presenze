@@ -19,7 +19,7 @@ button.btn:active{opacity:.8}
 button.btn:disabled{opacity:.35;cursor:not-allowed}
 button.btn.sec{background:#fff;color:#1a1a1a}
 button.btn.confirm{background:#1a7a4a;color:#fff;border-color:#1a7a4a}
-.srow{display:flex;gap:6px;margin-bottom:.75rem;flex-wrap:wrap;position:sticky;top:0;z-index:10;background:#f5f5f5;padding:8px 0 6px 0;}
+.srow{display:flex;gap:6px;margin-bottom:.75rem;flex-wrap:wrap;position:sticky;top:0;z-index:15;background:#f5f5f5;padding:8px 0 6px 0;}
 .sc{flex:1;min-width:55px;background:#fff;border:1px solid #eee;border-radius:8px;padding:10px 4px;text-align:center}
 .sc-n{font-size:16px;font-weight:600}
 .sc-l{font-size:10px;color:#888;margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
@@ -42,6 +42,10 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:background .3s}
 .err{color:#c0392b;font-size:13px;margin-top:8px;text-align:center}
 .card{background:#fff;border:1px solid #eee;border-radius:10px;padding:0;margin-bottom:.75rem}
+.sticky-thead{background:#fafafa;border-bottom:1px solid #eee;border-radius:10px 10px 0 0;overflow:hidden;position:sticky;top:0;z-index:20;}
+.sticky-thead table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;}
+.sticky-thead th{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.04em;padding:8px 4px;text-align:center;font-weight:600;white-space:nowrap;}
+.sticky-thead th:first-child{text-align:left;padding-left:10px;}
 .day-table{width:100%;border-collapse:collapse;font-size:12px}
 .day-table th{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.04em;padding:8px 4px;border-bottom:1px solid #eee;text-align:center;font-weight:600;white-space:nowrap;background:#fafafa;}
 .day-table thead{position:sticky;top:0;z-index:9;background:#fafafa;}
@@ -148,13 +152,12 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     <span id="status-txt">Bozza — le modifiche si salvano in automatico</span>
   </div>
   <div class="srow" id="sum-row"></div>
-  <div class="card" style="overflow:hidden">
-    <table class="day-table" style="width:100%;border-collapse:collapse">
-      <thead id="thead-wrap" style="display:table;width:100%;table-layout:fixed"><tr id="thead-row"></tr></thead>
-    </table>
-    <div style="overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch">
-    <table class="day-table">
-      <thead style="visibility:hidden;height:0"><tr id="thead-row-ghost"></tr></thead>
+  <div class="sticky-thead" id="sticky-thead">
+    <table><thead><tr id="thead-row"></tr></thead></table>
+  </div>
+  <div class="card" style="border-top:none;border-radius:0 0 10px 10px;margin-top:0">
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+    <table class="day-table" id="main-table">
       <tbody id="tbody-main"></tbody>
     </table>
     </div>
@@ -429,8 +432,7 @@ function renderCalendario(blk, D) {
     theadHTML='<th>Giorno</th><th>Ore lav.</th><th>Straord.</th><th>Notturne</th>';
   }
   thead.innerHTML=theadHTML;
-  const ghost=document.getElementById('thead-row-ghost');
-  if(ghost) ghost.innerHTML=theadHTML;
+
 
   const tbody = document.getElementById('tbody-main'); tbody.innerHTML='';
   let tL=0,tF=0,tM=0,tS=0,tN=0,tKm=0;
@@ -478,6 +480,20 @@ function renderCalendario(blk, D) {
     }
     tbody.appendChild(tr);
   }
+
+  // Sincronizza larghezze sticky header con la tabella
+  setTimeout(()=>{
+    const table=document.getElementById('main-table');
+    const stickyRow=document.getElementById('thead-row');
+    if(table && stickyRow && table.rows.length>0){
+      const cells=table.rows[0].cells;
+      const ths=stickyRow.cells;
+      for(let i=0;i<ths.length&&i<cells.length;i++){
+        ths[i].style.width=cells[i].offsetWidth+'px';
+        ths[i].style.minWidth=cells[i].offsetWidth+'px';
+      }
+    }
+  },50);
 
   if(tipo==='indeterminato'){
     document.getElementById('sum-row').innerHTML=`
