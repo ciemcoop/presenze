@@ -711,7 +711,7 @@ function buildAdminDetail(dip,D,confermato,t,y,m){
         const s=D[d]||{};
         const fer=parseFloat(s.fer)||0,mal=parseFloat(s.mal)||0,str=parseFloat(s.str)||0,km=parseFloat(s.km)||0;
         const lav=calcolaLav(ob,fer,mal);
-        if((w===0||w===6)&&!fer&&!mal&&!str&&!km) continue;
+        // mostra tutti i giorni inclusi weekend
         const nf=nomeFest(y,m,d);
         html+=`<tr><td>${GG[w]} ${String(d).padStart(2,'0')}${nf?' ('+nf+')':''}</td><td>${lav>0?lav+'h':'—'}</td><td>${fer>0?fer+'h':'—'}</td><td>${mal>0?mal+'h':'—'}</td><td>${str>0?str+'h':'—'}</td><td>${km>0?km:'—'}</td><td>${s.dest||'—'}</td></tr>`;
       }
