@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>CIEM COOP — Presenze</title>
-<!-- v2.1 -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -19,7 +18,8 @@ button.btn:active{opacity:.8}
 button.btn:disabled{opacity:.35;cursor:not-allowed}
 button.btn.sec{background:#fff;color:#1a1a1a}
 button.btn.confirm{background:#1a7a4a;color:#fff;border-color:#1a7a4a}
-.srow{display:flex;gap:6px;margin-bottom:.75rem;flex-wrap:wrap;position:sticky;top:0;z-index:15;background:#f5f5f5;padding:8px 0 6px 0;margin-bottom:.75rem;}
+button.btn.export-dip{background:#fff;color:#1a1a1a;border:1px solid #ddd;font-size:13px;padding:10px;}
+.srow{display:flex;gap:6px;margin-bottom:.75rem;flex-wrap:wrap;position:sticky;top:0;z-index:15;background:#f5f5f5;padding:8px 0 6px 0;}
 .sc{flex:1;min-width:55px;background:#fff;border:1px solid #eee;border-radius:8px;padding:10px 4px;text-align:center}
 .sc-n{font-size:16px;font-weight:600}
 .sc-l{font-size:10px;color:#888;margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
@@ -43,10 +43,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .err{color:#c0392b;font-size:13px;margin-top:8px;text-align:center}
 .card{background:#fff;border:1px solid #eee;border-radius:10px;padding:0;margin-bottom:.75rem}
 .table-container{overflow:visible;border-radius:10px;border:1px solid #eee;background:#fff;margin-bottom:.75rem;}
-.day-table thead tr{position:sticky;top:0;z-index:9;}
 .day-table{width:100%;border-collapse:collapse;font-size:12px}
 .day-table th{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.04em;padding:8px 4px;border-bottom:1px solid #eee;text-align:center;font-weight:600;white-space:nowrap;background:#fafafa;position:sticky;top:75px;z-index:90;box-shadow:0 2px 2px -1px rgba(0,0,0,0.05);}
-.day-table th:first-child{text-align:left;padding-left:10px;}
 .day-table th:first-child{text-align:left;padding-left:10px;min-width:76px}
 .day-table td{padding:5px 3px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
 .day-table td:first-child{padding-left:10px}
@@ -65,7 +63,6 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .loading{text-align:center;padding:2rem;color:#888;font-size:14px}
 .spinner{display:inline-block;width:20px;height:20px;border:2px solid #eee;border-top-color:#888;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
-/* admin */
 .admin-wrap{max-width:700px}
 .main-table{width:100%;border-collapse:collapse;font-size:13px}
 .main-table thead th{font-size:10px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.04em;padding:10px 12px;border-bottom:1px solid #eee;background:#fafafa;text-align:left;white-space:nowrap}
@@ -84,7 +81,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .chevron{font-size:11px;color:#aaa;transition:transform .2s;margin-left:4px;flex-shrink:0}
 .chevron.open{transform:rotate(180deg)}
 .detail-panel{background:#fafafa;overflow:hidden;max-height:0;transition:max-height .3s ease;border-top:1px solid #f0f0f0}
-.detail-panel.open{max-height:700px}
+.detail-panel.open{max-height:900px}
 .detail-inner{padding:1rem}
 .detail-grid{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
 .dg-card{background:#fff;border:1px solid #eee;border-radius:8px;padding:10px 14px;text-align:center;min-width:72px}
@@ -96,6 +93,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .day-det td{padding:4px 6px;border-bottom:1px solid #f5f5f5;text-align:center}
 .day-det td:first-child{text-align:left}
 .day-det tr:last-child td{border-bottom:none}
+.day-det tr.off-day td{color:#bbb}
 .act-btn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #ddd;background:#fff;color:#1a1a1a;margin-top:.75rem}
 .act-btn.unlock{color:#c0392b;border-color:#f5c6cb}
 .act-btn.lock{color:#0f6e3a;border-color:#a3dfc0}
@@ -110,11 +108,18 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .export-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:.75rem 1rem;border-top:1px solid #eee;background:#fafafa}
 .exp-btn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #ddd;background:#fff;color:#1a1a1a}
 .exp-btn:hover{background:#f5f5f5}
+.admin-tabs{display:flex;gap:0;border-bottom:1px solid #eee;margin-bottom:1rem}
+.admin-tab{padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;color:#888;border-bottom:2px solid transparent;margin-bottom:-1px}
+.admin-tab.active{color:#1a1a1a;border-bottom-color:#1a1a1a}
+.log-table{width:100%;border-collapse:collapse;font-size:12px}
+.log-table th{font-size:10px;color:#888;text-transform:uppercase;padding:8px 10px;border-bottom:1px solid #eee;text-align:left;font-weight:600;background:#fafafa}
+.log-table td{padding:8px 10px;border-bottom:1px solid #f5f5f5;font-size:12px}
+.log-table tr:last-child td{border-bottom:none}
 </style>
 </head>
 <body>
 
-<!-- LOGIN DIPENDENTE -->
+<!-- LOGIN -->
 <div id="s-login" class="screen active">
   <div class="logo">
     <div class="logo-t">CIEM COOP</div>
@@ -157,6 +162,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     </table>
   </div>
   <button class="btn confirm" id="btn-conferma" style="margin-top:.5rem" onclick="chiediConferma()">Conferma ore</button>
+  <button class="btn export-dip" style="margin-top:.5rem" onclick="exportExcelDipendente()">📊 Scarica Excel mese</button>
 </div>
 
 <!-- ADMIN -->
@@ -165,32 +171,67 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     <div style="font-weight:700;font-size:15px">Presenze — Admin</div>
     <button onclick="doLogout()" style="background:none;border:none;font-size:13px;color:#888;cursor:pointer">Esci</button>
   </div>
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:.75rem">
-    <div class="mese-nav-admin">
-      <button onclick="adminCambiaMese(-1)">‹</button>
-      <span id="admin-mese-label">—</span>
-      <button onclick="adminCambiaMese(1)">›</button>
-    </div>
-    <div style="font-size:12px;color:#888" id="admin-completamento"></div>
+
+  <div class="admin-tabs">
+    <button class="admin-tab active" onclick="switchAdminTab('presenze',this)">Presenze</button>
+    <button class="admin-tab" onclick="switchAdminTab('accessi',this)">Accessi</button>
   </div>
-  <div class="spill-row" id="admin-spill-row"></div>
-  <div style="background:#fff;border:1px solid #eee;border-radius:10px;overflow:hidden;margin-bottom:1rem">
-    <table class="main-table">
-      <thead><tr>
-        <th>Dipendente</th>
-        <th style="text-align:center">Stato</th>
-        <th style="text-align:center">Lavoro</th>
-        <th style="text-align:center">Ferie/P.</th>
-        <th style="text-align:center">Malattia</th>
-        <th style="text-align:center">Straord.</th>
-      </tr></thead>
-      <tbody id="admin-tbody"></tbody>
-    </table>
-    <div class="export-bar">
-      <span style="font-size:12px;color:#888;margin-right:4px">Esporta:</span>
-      <button class="exp-btn" onclick="exportExcel()">📊 Excel</button>
-      <button class="exp-btn" onclick="exportCSVZucchetti()">📄 CSV Zucchetti</button>
-      <button class="exp-btn" onclick="exportGoogleSheets()">📋 Copia per Sheets</button>
+
+  <!-- TAB PRESENZE -->
+  <div id="admin-pane-presenze">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:.75rem">
+      <div class="mese-nav-admin">
+        <button onclick="adminCambiaMese(-1)">‹</button>
+        <span id="admin-mese-label">—</span>
+        <button onclick="adminCambiaMese(1)">›</button>
+      </div>
+      <div style="font-size:12px;color:#888" id="admin-completamento"></div>
+    </div>
+    <div class="spill-row" id="admin-spill-row"></div>
+    <div style="background:#fff;border:1px solid #eee;border-radius:10px;overflow:hidden;margin-bottom:1rem">
+      <table class="main-table">
+        <thead><tr>
+          <th>Dipendente</th>
+          <th style="text-align:center">Stato</th>
+          <th style="text-align:center">Lavoro</th>
+          <th style="text-align:center">Ferie/P.</th>
+          <th style="text-align:center">Malattia</th>
+          <th style="text-align:center">Straord.</th>
+        </tr></thead>
+        <tbody id="admin-tbody"></tbody>
+      </table>
+      <div class="export-bar">
+        <span style="font-size:12px;color:#888;margin-right:4px">Esporta:</span>
+        <button class="exp-btn" onclick="exportExcel()">📊 Excel</button>
+        <button class="exp-btn" onclick="exportCSVZucchetti()">📄 CSV Zucchetti</button>
+        <button class="exp-btn" onclick="exportGoogleSheets()">📋 Copia per Sheets</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB ACCESSI -->
+  <div id="admin-pane-accessi" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
+      <div style="font-size:13px;color:#888">Ultimi 100 accessi</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="filtro-dip" onchange="renderAccessi()" style="font-size:12px;padding:6px 10px;border:1px solid #ddd;border-radius:8px;background:#fff;width:auto">
+          <option value="">Tutti i dipendenti</option>
+        </select>
+        <button onclick="renderAccessi()" style="padding:6px 12px;border:1px solid #ddd;border-radius:8px;background:#fff;font-size:12px;cursor:pointer">↻ Aggiorna</button>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid #eee;border-radius:10px;overflow:hidden">
+      <table class="log-table">
+        <thead><tr>
+          <th>Dipendente</th>
+          <th>Data</th>
+          <th>Ora</th>
+          <th>Dispositivo</th>
+        </tr></thead>
+        <tbody id="accessi-tbody">
+          <tr><td colspan="4" class="loading"><span class="spinner"></span>Caricamento...</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -207,12 +248,10 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-// ── CONFIG SUPABASE ──────────────────────────────────────────────
 const SUPABASE_URL = 'https://zzfbtzhvvknffkosunqe.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp6ZmJ0emh2dmtuZmZrb3N1bnFlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NDU5NDAsImV4cCI6MjA5MzEyMTk0MH0.rntb1fkpVDBc-B_V6kvZ4-Oukzl4efzZH1ga7aZLNhc';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ── DIPENDENTI ───────────────────────────────────────────────────
 const DIPENDENTI = [
   {id:'DP01', nome:'Bianco Giovanni',    cf:'BNCGNN89S27I403K', tipo:'indeterminato', matricola:'001'},
   {id:'DP02', nome:'Del Maschio Andrea', cf:'DLMNDR76M28A516I', tipo:'indeterminato', matricola:'002'},
@@ -220,31 +259,24 @@ const DIPENDENTI = [
   {id:'AV02', nome:'Fadelli Davide',     cf:'FDLDVD04A26G888H', tipo:'av_full',       matricola:'AV02'},
 ];
 const ADMIN_CF = 'ADMINCIEMCOOP';
-
-// ── COSTANTI ─────────────────────────────────────────────────────
 const FESTIVI = {'01-01':1,'01-06':1,'04-25':1,'05-01':1,'06-02':1,'08-15':1,'11-01':1,'12-08':1,'12-25':1,'12-26':1};
 const PASQUA  = {'2024':'2024-03-31','2025':'2025-04-20','2026':'2026-04-06','2027':'2027-03-28'};
 const LUNEDI  = {'2024':'2024-04-01','2025':'2025-04-21','2026':'2026-04-07','2027':'2027-03-29'};
 const MESI    = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
-const MESI_S  = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
 const GG      = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
 const NFEST   = {'01-01':'Capodanno','01-06':'Epifania','04-25':'Liberazione','05-01':'Lavoro','06-02':'Repubblica','08-15':'Ferragosto','11-01':'Ognissanti','12-08':'Immacolata','12-25':'Natale','12-26':'S.Stefano'};
 
-// ── STATO ────────────────────────────────────────────────────────
-let utente = null, meseC, annoC, autosaveTimer = null;
-let adminMeseC, adminAnnoC, adminExpanded = null;
+let utente=null, meseC, annoC, autosaveTimer=null, bloccato=false;
+let adminMeseC, adminAnnoC, adminExpanded=null;
 
-// ── HELPERS DATA ─────────────────────────────────────────────────
 function isFestivo(y,m,d){
-  const mm=String(m).padStart(2,'0'), dd=String(d).padStart(2,'0');
-  const k=mm+'-'+dd;
+  const mm=String(m).padStart(2,'0'),dd=String(d).padStart(2,'0'),k=mm+'-'+dd;
   if(FESTIVI[k]) return true;
   const iso=String(y)+'-'+mm+'-'+dd;
   return PASQUA[String(y)]===iso||LUNEDI[String(y)]===iso;
 }
 function nomeFest(y,m,d){
-  const mm=String(m).padStart(2,'0'), dd=String(d).padStart(2,'0');
-  const k=mm+'-'+dd;
+  const mm=String(m).padStart(2,'0'),dd=String(d).padStart(2,'0'),k=mm+'-'+dd;
   if(NFEST[k]) return NFEST[k];
   const iso=String(y)+'-'+mm+'-'+dd;
   if(PASQUA[String(y)]===iso) return 'Pasqua';
@@ -254,202 +286,144 @@ function nomeFest(y,m,d){
 function dw(y,m,d){return new Date(y,m-1,d).getDay()}
 function oreBase(y,m,d){const w=dw(y,m,d);if(w===0||w===6||isFestivo(y,m,d))return 0;return w===5?7:8}
 function calcolaLav(ob,fer,mal){return Math.max(0,ob-(fer||0)-(mal||0))}
+function oggiData(){const now=new Date();return{y:now.getFullYear(),m:now.getMonth()+1,d:now.getDate()}}
 function meseDefault(){
   const now=new Date(),oggi=now.getDate(),m=now.getMonth()+1,y=now.getFullYear();
   if(oggi<=5) return m===1?{m:12,y:y-1}:{m:m-1,y};
   return {m,y};
 }
-function meseCorrente(){
-  const now=new Date();
-  return {m:now.getMonth()+1, y:now.getFullYear()};
-}
-function oggiData(){
-  const now=new Date();
-  return {y:now.getFullYear(), m:now.getMonth()+1, d:now.getDate()};
-}
+function meseCorrente(){const now=new Date();return{m:now.getMonth()+1,y:now.getFullYear()}}
 function isGiornoFuturo(y,m,d){
-  const oggi=oggiData();
-  if(y>oggi.y) return true;
-  if(y===oggi.y && m>oggi.m) return true;
-  if(y===oggi.y && m===oggi.m && d>oggi.d) return true;
+  const o=oggiData();
+  if(y>o.y) return true;
+  if(y===o.y&&m>o.m) return true;
+  if(y===o.y&&m===o.m&&d>o.d) return true;
   return false;
 }
 function canConferma(y,m){
-  // può confermare dall'ultimo giorno del mese in poi
-  const oggi=oggiData();
-  const ultimoGiorno=new Date(y,m,0).getDate();
-  if(oggi.y>y) return true;
-  if(oggi.y===y && oggi.m>m) return true;
-  if(oggi.y===y && oggi.m===m && oggi.d>=ultimoGiorno) return true;
+  const o=oggiData(),ultimo=new Date(y,m,0).getDate();
+  if(o.y>y) return true;
+  if(o.y===y&&o.m>m) return true;
+  if(o.y===y&&o.m===m&&o.d>=ultimo) return true;
   return false;
 }
 
-// ── SUPABASE HELPERS ─────────────────────────────────────────────
-async function caricaDati(dipId, y, m) {
-  const { data } = await sb.from('presenze').select('*')
-    .eq('dip_id', dipId).eq('anno', y).eq('mese', m);
-  if (!data || data.length === 0) return null;
-  const obj = {};
-  data.forEach(r => { obj[r.giorno] = r; });
-  return obj;
+// ── SUPABASE ──────────────────────────────────────────────────────
+async function caricaDati(dipId,y,m){
+  const {data}=await sb.from('presenze').select('*').eq('dip_id',dipId).eq('anno',y).eq('mese',m);
+  if(!data||data.length===0) return null;
+  const obj={};data.forEach(r=>{obj[r.giorno]=r;});return obj;
+}
+async function salvaDato(dipId,y,m,giorno,fields){
+  const record={dip_id:dipId,anno:y,mese:m,giorno,...fields};
+  await sb.from('presenze').upsert(record,{onConflict:'dip_id,anno,mese,giorno'});
+}
+async function caricaStato(dipId,y,m){
+  const {data}=await sb.from('stati_mese').select('confermato').eq('dip_id',dipId).eq('anno',y).eq('mese',m).single();
+  return data?data.confermato:false;
+}
+async function salvaStato(dipId,y,m,confermato){
+  await sb.from('stati_mese').upsert({dip_id:dipId,anno:y,mese:m,confermato},{onConflict:'dip_id,anno,mese'});
+}
+async function salvaAccesso(dipId,nome){
+  try{
+    const ua=navigator.userAgent;
+    let dispositivo='Desktop';
+    if(/iPhone|iPad|iPod/.test(ua)) dispositivo='iPhone/iPad';
+    else if(/Android/.test(ua)) dispositivo='Android';
+    await sb.from('log_accessi').insert({dip_id:dipId,nome,dispositivo});
+  }catch(e){console.log('log accesso fallito',e);}
 }
 
-async function salvaDato(dipId, y, m, giorno, fields) {
-  const record = { dip_id: dipId, anno: y, mese: m, giorno, ...fields };
-  await sb.from('presenze').upsert(record, { onConflict: 'dip_id,anno,mese,giorno' });
-}
-
-async function caricaStato(dipId, y, m) {
-  const { data } = await sb.from('stati_mese').select('confermato')
-    .eq('dip_id', dipId).eq('anno', y).eq('mese', m).single();
-  return data ? data.confermato : false;
-}
-
-async function salvaStato(dipId, y, m, confermato) {
-  await sb.from('stati_mese').upsert(
-    { dip_id: dipId, anno: y, mese: m, confermato },
-    { onConflict: 'dip_id,anno,mese' }
-  );
-}
-
-// ── LOGIN ────────────────────────────────────────────────────────
-async function doLogin() {
-  const cf = document.getElementById('inp-cf').value.trim().toUpperCase();
-  const errEl = document.getElementById('login-err');
-  errEl.textContent = '';
-
-  if (cf === ADMIN_CF) {
+// ── LOGIN ──────────────────────────────────────────────────────────
+async function doLogin(){
+  const cf=document.getElementById('inp-cf').value.trim().toUpperCase();
+  const errEl=document.getElementById('login-err');errEl.textContent='';
+  if(cf===ADMIN_CF){
     show('s-admin');
-    const now = new Date();
-    adminMeseC = now.getMonth()+1; adminAnnoC = now.getFullYear();
+    const now=new Date();adminMeseC=now.getMonth()+1;adminAnnoC=now.getFullYear();
+    initAdminFiltro();
     renderAdmin();
     return;
   }
-
-  const dip = DIPENDENTI.find(d => d.cf === cf);
-  if (!dip) { errEl.textContent = 'Codice fiscale non trovato. Contatta l\'ufficio.'; return; }
-
-  const btn = document.getElementById('btn-login');
-  btn.disabled = true; btn.textContent = 'Accesso...';
-
-  utente = dip;
-  const def = meseDefault(); meseC = def.m; annoC = def.y;
-  document.getElementById('h-nome').textContent = dip.nome;
-  const label = {indeterminato:'Indeterminato', av_simple:'Avventizio', av_full:'Avventizio stagionale'};
-  document.getElementById('h-tipo').textContent = label[dip.tipo] || dip.tipo;
-
+  const dip=DIPENDENTI.find(d=>d.cf===cf);
+  if(!dip){errEl.textContent='Codice fiscale non trovato. Contatta l\'ufficio.';return;}
+  const btn=document.getElementById('btn-login');btn.disabled=true;btn.textContent='Accesso...';
+  utente=dip;
+  const def=meseDefault();meseC=def.m;annoC=def.y;
+  document.getElementById('h-nome').textContent=dip.nome;
+  const label={indeterminato:'Indeterminato',av_simple:'Avventizio',av_full:'Avventizio stagionale'};
+  document.getElementById('h-tipo').textContent=label[dip.tipo]||dip.tipo;
+  await salvaAccesso(dip.id,dip.nome);
   show('s-home');
   await renderPresenze();
-  btn.disabled = false; btn.textContent = 'Accedi';
+  btn.disabled=false;btn.textContent='Accedi';
 }
-
-function doLogout() {
-  utente = null;
-  document.getElementById('inp-cf').value = '';
-  document.getElementById('login-err').textContent = '';
+function doLogout(){
+  utente=null;
+  document.getElementById('inp-cf').value='';
+  document.getElementById('login-err').textContent='';
   show('s-login');
 }
-function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 
-// ── AUTOSAVE ─────────────────────────────────────────────────────
-function setStatus(stato) {
-  const bar = document.getElementById('status-bar');
-  const dot = document.getElementById('dot');
-  const txt = document.getElementById('status-txt');
-  if(stato==='saving'){
-    bar.className='status-bar status-saving'; dot.style.background='#f0a500';
-    txt.textContent='Salvataggio...';
-  } else if(stato==='saved'){
-    bar.className='status-bar status-saved'; dot.style.background='#1a7a4a';
-    txt.textContent='Salvato ✓';
-    setTimeout(()=>{ if(!bloccato) setStatus('open'); }, 1500);
-  } else if(stato==='confirmed'){
-    bar.className='status-bar status-confirmed'; dot.style.background='#1a7a4a';
-    txt.textContent='Ore confermate — mese chiuso';
-  } else {
-    bar.className='status-bar status-open'; dot.style.background='#bbb';
-    txt.textContent='Bozza — le modifiche si salvano in automatico';
-  }
+// ── STATUS ────────────────────────────────────────────────────────
+function setStatus(stato){
+  const bar=document.getElementById('status-bar'),dot=document.getElementById('dot'),txt=document.getElementById('status-txt');
+  if(stato==='saving'){bar.className='status-bar status-saving';dot.style.background='#f0a500';txt.textContent='Salvataggio...';}
+  else if(stato==='saved'){bar.className='status-bar status-saved';dot.style.background='#1a7a4a';txt.textContent='Salvato ✓';setTimeout(()=>{if(!bloccato)setStatus('open');},1500);}
+  else if(stato==='confirmed'){bar.className='status-bar status-confirmed';dot.style.background='#1a7a4a';txt.textContent='Ore confermate — mese chiuso';}
+  else{bar.className='status-bar status-open';dot.style.background='#bbb';txt.textContent='Bozza — le modifiche si salvano in automatico';}
 }
 
-let bloccato = false;
-
-// ── RENDER PRESENZE ──────────────────────────────────────────────
-async function cambiaMese(dir) {
-  meseC += dir;
-  if(meseC>12){meseC=1;annoC++}
-  if(meseC<1){meseC=12;annoC--}
+// ── RENDER PRESENZE ───────────────────────────────────────────────
+async function cambiaMese(dir){
+  meseC+=dir;if(meseC>12){meseC=1;annoC++}if(meseC<1){meseC=12;annoC--}
   await renderPresenze();
 }
-
-async function renderPresenze() {
-  document.getElementById('mese-label').textContent = MESI[meseC-1]+' '+annoC;
-  document.getElementById('tbody-main').innerHTML = '<tr><td colspan="7" class="loading"><span class="spinner"></span>Caricamento...</td></tr>';
-  document.getElementById('sum-row').innerHTML = '';
-
+async function renderPresenze(){
+  document.getElementById('mese-label').textContent=MESI[meseC-1]+' '+annoC;
+  document.getElementById('tbody-main').innerHTML='<tr><td colspan="7" class="loading"><span class="spinner"></span>Caricamento...</td></tr>';
+  document.getElementById('sum-row').innerHTML='';
   const mc=meseCorrente();
-  document.getElementById('btn-next').disabled = (annoC>mc.y)||(annoC===mc.y&&meseC>=mc.m);
-
-  bloccato = await caricaStato(utente.id, annoC, meseC);
-  const datiMese = await caricaDati(utente.id, annoC, meseC) || {};
-
-  const btn = document.getElementById('btn-conferma');
+  document.getElementById('btn-next').disabled=(annoC>mc.y)||(annoC===mc.y&&meseC>=mc.m);
+  bloccato=await caricaStato(utente.id,annoC,meseC);
+  const datiMese=await caricaDati(utente.id,annoC,meseC)||{};
+  const btn=document.getElementById('btn-conferma');
   if(bloccato){
-    setStatus('confirmed');
-    btn.disabled=true; btn.textContent='Ore già confermate';
+    setStatus('confirmed');btn.disabled=true;btn.textContent='Ore già confermate';btn.style.opacity='1';btn.style.fontSize='15px';
   } else if(!canConferma(annoC,meseC)){
-    setStatus('open');
-    btn.disabled=true; btn.textContent='Conferma disponibile dall\'ultimo giorno del mese';
-    btn.style.opacity='0.45'; btn.style.fontSize='12px';
+    setStatus('open');btn.disabled=true;btn.textContent='Conferma disponibile dall\'ultimo giorno del mese';btn.style.opacity='0.45';btn.style.fontSize='12px';
   } else {
-    setStatus('open');
-    btn.disabled=false; btn.textContent='Conferma ore';
-    btn.style.opacity='1'; btn.style.fontSize='15px';
+    setStatus('open');btn.disabled=false;btn.textContent='Conferma ore';btn.style.opacity='1';btn.style.fontSize='15px';
   }
-
-  renderCalendario(bloccato, datiMese);
-
-
+  renderCalendario(bloccato,datiMese);
 }
 
-function renderCalendario(blk, D) {
-  const y=annoC, m=meseC, days=new Date(y,m,0).getDate();
-  const dis = blk ? 'disabled' : '';
-  const tipo = utente.tipo;
-  const thead = document.getElementById('thead-row');
-
-  let theadHTML = '';
-  if(tipo==='indeterminato'){
-    theadHTML='<th>Giorno</th><th>Lav.</th><th>Fer./Perm.</th><th>Mal.</th><th>Str.</th><th>km</th><th>Destinazione</th>';
-  } else if(tipo==='av_simple'){
-    theadHTML='<th>Giorno</th><th>Ore lav.</th><th>km</th><th>Destinazione</th>';
-  } else {
-    theadHTML='<th>Giorno</th><th>Ore lav.</th><th>Straord.</th><th>Notturne</th>';
-  }
+function renderCalendario(blk,D){
+  const y=annoC,m=meseC,days=new Date(y,m,0).getDate();
+  const tipo=utente.tipo;
+  const thead=document.getElementById('thead-row');
+  let theadHTML='';
+  if(tipo==='indeterminato') theadHTML='<th>Giorno</th><th>Lav.</th><th>Fer./Perm.</th><th>Mal.</th><th>Str.</th><th>km</th><th>Destinazione</th>';
+  else if(tipo==='av_simple') theadHTML='<th>Giorno</th><th>Ore lav.</th><th>km</th><th>Destinazione</th>';
+  else theadHTML='<th>Giorno</th><th>Ore lav.</th><th>Straord.</th><th>Notturne</th>';
   thead.innerHTML=theadHTML;
-
-
-  const tbody = document.getElementById('tbody-main'); tbody.innerHTML='';
+  const tbody=document.getElementById('tbody-main');tbody.innerHTML='';
   let tL=0,tF=0,tM=0,tS=0,tN=0,tKm=0;
-
   for(let d=1;d<=days;d++){
-    const w=dw(y,m,d), fest=isFestivo(y,m,d), ob=oreBase(y,m,d);
-    const isOff=w===0||w===6;
-    const nf=nomeFest(y,m,d);
-    const s=D[d]||{};
+    const w=dw(y,m,d),fest=isFestivo(y,m,d),ob=oreBase(y,m,d);
+    const isOff=w===0||w===6,nf=nomeFest(y,m,d),s=D[d]||{};
+    const futuro=isGiornoFuturo(y,m,d),disGiorno=(blk||futuro)?'disabled':'';
     const tr=document.createElement('tr');
     if(isOff||fest) tr.className='off';
-    const dayCell=`${GG[w]} ${String(d).padStart(2,'0')}${nf?` <span class="fest-b">${nf}</span>`:''}`;
-
-    const futuro = isGiornoFuturo(y,m,d);
-    const disGiorno = (blk || futuro) ? 'disabled' : '';
     if(futuro) tr.style.opacity='0.4';
+    const dayCell=`${GG[w]} ${String(d).padStart(2,'0')}${nf?` <span class="fest-b">${nf}</span>`:''}`;
     if(tipo==='indeterminato'){
-      const fer=parseFloat(s.fer)||0, mal=parseFloat(s.mal)||0, str=parseFloat(s.str)||0, km=parseFloat(s.km)||0;
+      const fer=parseFloat(s.fer)||0,mal=parseFloat(s.mal)||0,str=parseFloat(s.str)||0,km=parseFloat(s.km)||0;
       const lav=calcolaLav(ob,fer,mal);
       tL+=lav;tF+=fer;tM+=mal;tS+=str;tKm+=km;
-      tr.innerHTML=`
-        <td>${dayCell}</td>
+      tr.innerHTML=`<td>${dayCell}</td>
         <td><input type="number" inputmode="decimal" class="ni auto" id="lav-${d}" value="${lav}" readonly tabindex="-1"></td>
         <td><input type="number" inputmode="decimal" class="ni" min="0" max="${ob}" step="0.5" value="${fer||''}" placeholder="—" onchange="salvaField(${d},'fer',this.value,'fermal',${ob})" ${disGiorno}></td>
         <td><input type="number" inputmode="decimal" class="ni" min="0" max="${ob}" step="0.5" value="${mal||''}" placeholder="—" onchange="salvaField(${d},'mal',this.value,'fermal',${ob})" ${disGiorno}></td>
@@ -457,100 +431,21 @@ function renderCalendario(blk, D) {
         <td><input type="number" inputmode="decimal" class="ni" min="0" step="1" value="${km||''}" placeholder="—" onchange="salvaField(${d},'km',this.value)" ${disGiorno}></td>
         <td><input class="di" type="text" value="${s.dest||''}" placeholder="Destinazione" onchange="salvaField(${d},'dest',this.value)" ${disGiorno}></td>`;
     } else if(tipo==='av_simple'){
-      const ore=parseFloat(s.ore)||0, km=parseFloat(s.km)||0;
-      tL+=ore; tKm+=km;
-      tr.innerHTML=`
-        <td>${dayCell}</td>
+      const ore=parseFloat(s.ore)||0,km=parseFloat(s.km)||0;
+      tL+=ore;tKm+=km;
+      tr.innerHTML=`<td>${dayCell}</td>
         <td><input type="number" inputmode="decimal" class="ni" min="0" max="24" step="0.5" value="${ore||''}" placeholder="—" onchange="salvaField(${d},'ore',this.value)" ${disGiorno}></td>
         <td><input type="number" inputmode="decimal" class="ni" min="0" step="1" value="${km||''}" placeholder="—" onchange="salvaField(${d},'km',this.value)" ${disGiorno}></td>
         <td><input class="di" type="text" value="${s.dest||''}" placeholder="Destinazione" onchange="salvaField(${d},'dest',this.value)" ${disGiorno}></td>`;
     } else {
-      const ore=parseFloat(s.ore)||0, str=parseFloat(s.str)||0, not=parseFloat(s.ore_nott)||0;
-      tL+=ore; tS+=str; tN+=not;
-      tr.innerHTML=`
-        <td>${dayCell}</td>
+      const ore=parseFloat(s.ore)||0,str=parseFloat(s.str)||0,not=parseFloat(s.ore_nott)||0;
+      tL+=ore;tS+=str;tN+=not;
+      tr.innerHTML=`<td>${dayCell}</td>
         <td><input type="number" inputmode="decimal" class="ni" min="0" max="24" step="0.5" value="${ore||''}" placeholder="—" onchange="salvaField(${d},'ore',this.value)" ${disGiorno}></td>
         <td><input type="number" inputmode="decimal" class="ni" min="0" max="12" step="0.5" value="${str||''}" placeholder="—" onchange="salvaField(${d},'str',this.value)" ${disGiorno}></td>
         <td><input type="number" inputmode="decimal" class="ni" min="0" max="12" step="0.5" value="${not||''}" placeholder="—" onchange="salvaField(${d},'ore_nott',this.value)" ${disGiorno}></td>`;
     }
     tbody.appendChild(tr);
-  }
-
-    if(tipo==='indeterminato'){
-    document.getElementById('sum-row').innerHTML=`
-      <div class="sc"><div class="sc-n">${tL.toFixed(1)}h</div><div class="sc-l">Lavoro</div></div>
-      <div class="sc"><div class="sc-n">${tF.toFixed(1)}h</div><div class="sc-l">Ferie/Perm.</div></div>
-      <div class="sc"><div class="sc-n">${tM.toFixed(1)}h</div><div class="sc-l">Malattia</div></div>
-      <div class="sc"><div class="sc-n">${tS.toFixed(1)}h</div><div class="sc-l">Straord.</div></div>`;
-  } else if(tipo==='av_simple'){
-    document.getElementById('sum-row').innerHTML=`
-      <div class="sc"><div class="sc-n">${tL.toFixed(1)}h</div><div class="sc-l">Ore lavoro</div></div>
-      <div class="sc"><div class="sc-n">${tKm}</div><div class="sc-l">km totali</div></div>`;
-  } else {
-    document.getElementById('sum-row').innerHTML=`
-      <div class="sc"><div class="sc-n">${tL.toFixed(1)}h</div><div class="sc-l">Lavoro</div></div>
-      <div class="sc"><div class="sc-n">${tS.toFixed(1)}h</div><div class="sc-l">Straord.</div></div>
-      <div class="sc"><div class="sc-n">${tN.toFixed(1)}h</div><div class="sc-l">Notturne</div></div>`;
-  }
-}
-
-// ── SALVATAGGIO CAMPO ────────────────────────────────────────────
-let pendingFields = {};
-
-async function salvaField(d, field, val, modalita, ob) {
-  if(bloccato) return;
-  if(!pendingFields[d]) pendingFields[d] = {};
-  pendingFields[d][field] = field==='dest' ? val : (parseFloat(val)||0);
-
-  // gestione ferie/malattia
-  if(modalita==='fermal') {
-    const fer = parseFloat(pendingFields[d].fer ?? (document.getElementById('tbody-main').rows[d-1]?.cells[2]?.querySelector('input')?.value)) || 0;
-    const mal = parseFloat(pendingFields[d].mal ?? (document.getElementById('tbody-main').rows[d-1]?.cells[3]?.querySelector('input')?.value)) || 0;
-    if(fer+mal > ob) {
-      pendingFields[d][field] = Math.max(0, ob - (field==='fer' ? mal : fer));
-      const row = document.getElementById('tbody-main').rows[d-1];
-      if(row) row.cells[field==='fer'?2:3].querySelector('input').value = pendingFields[d][field]||'';
-    }
-    const lav = calcolaLav(ob, parseFloat(pendingFields[d].fer)||0, parseFloat(pendingFields[d].mal)||0);
-    const li = document.getElementById('lav-'+d);
-    if(li) li.value = lav;
-  }
-
-  setStatus('saving');
-  clearTimeout(autosaveTimer);
-  autosaveTimer = setTimeout(async () => {
-    for(const [giorno, fields] of Object.entries(pendingFields)) {
-      await salvaDato(utente.id, annoC, meseC, parseInt(giorno), fields);
-    }
-    pendingFields = {};
-    setStatus('saved');
-    aggiornaRiepilogoLocale();
-  }, 800);
-}
-
-function aggiornaRiepilogoLocale() {
-  // ricalcola i totali in cima senza ricaricare tutto
-  const rows = document.getElementById('tbody-main').rows;
-  let tL=0,tF=0,tM=0,tS=0,tN=0,tKm=0;
-  const tipo=utente.tipo;
-  for(let i=0;i<rows.length;i++){
-    const cells=rows[i].cells;
-    if(!cells||cells.length<2) continue;
-    const inputs=rows[i].querySelectorAll('input[type=number]');
-    if(tipo==='indeterminato'){
-      tL+=parseFloat(inputs[0]?.value)||0;
-      tF+=parseFloat(inputs[1]?.value)||0;
-      tM+=parseFloat(inputs[2]?.value)||0;
-      tS+=parseFloat(inputs[3]?.value)||0;
-      tKm+=parseFloat(inputs[4]?.value)||0;
-    } else if(tipo==='av_simple'){
-      tL+=parseFloat(inputs[0]?.value)||0;
-      tKm+=parseFloat(inputs[1]?.value)||0;
-    } else {
-      tL+=parseFloat(inputs[0]?.value)||0;
-      tS+=parseFloat(inputs[1]?.value)||0;
-      tN+=parseFloat(inputs[2]?.value)||0;
-    }
   }
   if(tipo==='indeterminato'){
     document.getElementById('sum-row').innerHTML=`
@@ -570,52 +465,152 @@ function aggiornaRiepilogoLocale() {
   }
 }
 
-// ── CONFERMA ─────────────────────────────────────────────────────
+// ── SALVATAGGIO ───────────────────────────────────────────────────
+let pendingFields={};
+async function salvaField(d,field,val,modalita,ob){
+  if(bloccato) return;
+  if(!pendingFields[d]) pendingFields[d]={};
+  pendingFields[d][field]=field==='dest'?val:(parseFloat(val)||0);
+  if(modalita==='fermal'){
+    const fer=parseFloat(pendingFields[d].fer??(document.getElementById('tbody-main').rows[d-1]?.cells[2]?.querySelector('input')?.value))||0;
+    const mal=parseFloat(pendingFields[d].mal??(document.getElementById('tbody-main').rows[d-1]?.cells[3]?.querySelector('input')?.value))||0;
+    if(fer+mal>ob){
+      pendingFields[d][field]=Math.max(0,ob-(field==='fer'?mal:fer));
+      const row=document.getElementById('tbody-main').rows[d-1];
+      if(row) row.cells[field==='fer'?2:3].querySelector('input').value=pendingFields[d][field]||'';
+    }
+    const lav=calcolaLav(ob,parseFloat(pendingFields[d].fer)||0,parseFloat(pendingFields[d].mal)||0);
+    const li=document.getElementById('lav-'+d);if(li) li.value=lav;
+  }
+  setStatus('saving');
+  clearTimeout(autosaveTimer);
+  autosaveTimer=setTimeout(async()=>{
+    for(const [giorno,fields] of Object.entries(pendingFields)){
+      await salvaDato(utente.id,annoC,meseC,parseInt(giorno),fields);
+    }
+    pendingFields={};setStatus('saved');aggiornaRiepilogoLocale();
+  },800);
+}
+
+function aggiornaRiepilogoLocale(){
+  const rows=document.getElementById('tbody-main').rows;
+  let tL=0,tF=0,tM=0,tS=0,tN=0,tKm=0;
+  const tipo=utente.tipo;
+  for(let i=0;i<rows.length;i++){
+    if(!rows[i].cells||rows[i].cells.length<2) continue;
+    const inputs=rows[i].querySelectorAll('input[type=number]');
+    if(tipo==='indeterminato'){tL+=parseFloat(inputs[0]?.value)||0;tF+=parseFloat(inputs[1]?.value)||0;tM+=parseFloat(inputs[2]?.value)||0;tS+=parseFloat(inputs[3]?.value)||0;tKm+=parseFloat(inputs[4]?.value)||0;}
+    else if(tipo==='av_simple'){tL+=parseFloat(inputs[0]?.value)||0;tKm+=parseFloat(inputs[1]?.value)||0;}
+    else{tL+=parseFloat(inputs[0]?.value)||0;tS+=parseFloat(inputs[1]?.value)||0;tN+=parseFloat(inputs[2]?.value)||0;}
+  }
+  if(tipo==='indeterminato'){
+    document.getElementById('sum-row').innerHTML=`<div class="sc"><div class="sc-n">${tL.toFixed(1)}h</div><div class="sc-l">Lavoro</div></div><div class="sc"><div class="sc-n">${tF.toFixed(1)}h</div><div class="sc-l">Ferie/Perm.</div></div><div class="sc"><div class="sc-n">${tM.toFixed(1)}h</div><div class="sc-l">Malattia</div></div><div class="sc"><div class="sc-n">${tS.toFixed(1)}h</div><div class="sc-l">Straord.</div></div>`;
+  } else if(tipo==='av_simple'){
+    document.getElementById('sum-row').innerHTML=`<div class="sc"><div class="sc-n">${tL.toFixed(1)}h</div><div class="sc-l">Ore lavoro</div></div><div class="sc"><div class="sc-n">${tKm}</div><div class="sc-l">km totali</div></div>`;
+  } else {
+    document.getElementById('sum-row').innerHTML=`<div class="sc"><div class="sc-n">${tL.toFixed(1)}h</div><div class="sc-l">Lavoro</div></div><div class="sc"><div class="sc-n">${tS.toFixed(1)}h</div><div class="sc-l">Straord.</div></div><div class="sc"><div class="sc-n">${tN.toFixed(1)}h</div><div class="sc-l">Notturne</div></div>`;
+  }
+}
+
+// ── CONFERMA ──────────────────────────────────────────────────────
 function chiediConferma(){
   if(bloccato) return;
-  document.getElementById('modal-mese').textContent = MESI[meseC-1]+' '+annoC;
+  document.getElementById('modal-mese').textContent=MESI[meseC-1]+' '+annoC;
   document.getElementById('modal-bg').classList.add('show');
 }
-function chiudiModal(){ document.getElementById('modal-bg').classList.remove('show'); }
+function chiudiModal(){document.getElementById('modal-bg').classList.remove('show');}
 async function confermaDef(){
   chiudiModal();
-  await salvaStato(utente.id, annoC, meseC, true);
-  bloccato = true;
-  setStatus('confirmed');
+  await salvaStato(utente.id,annoC,meseC,true);
+  bloccato=true;setStatus('confirmed');
   document.getElementById('btn-conferma').disabled=true;
   document.getElementById('btn-conferma').textContent='Ore già confermate';
   await renderPresenze();
 }
 
-// ── ADMIN ─────────────────────────────────────────────────────────
-async function adminCambiaMese(dir){
-  adminMeseC+=dir;
-  if(adminMeseC>12){adminMeseC=1;adminAnnoC++}
-  if(adminMeseC<1){adminMeseC=12;adminAnnoC--}
-  adminExpanded=null;
-  await renderAdmin();
+// ── EXPORT DIPENDENTE ─────────────────────────────────────────────
+async function exportExcelDipendente(){
+  if(typeof XLSX==='undefined'){alert('Libreria non caricata, riprova.');return;}
+  const D=await caricaDati(utente.id,annoC,meseC)||{};
+  const y=annoC,m=meseC,days=new Date(y,m,0).getDate();
+  const tipo=utente.tipo;
+  const rows=[];
+  for(let d=1;d<=days;d++){
+    const w=dw(y,m,d),fest=isFestivo(y,m,d),ob=oreBase(y,m,d),s=D[d]||{};
+    const nf=nomeFest(y,m,d);
+    const tipoGiorno=(w===0||w===6)?'Weekend':fest?nf||'Festivo':'Lavorativo';
+    if(tipo==='indeterminato'){
+      const fer=parseFloat(s.fer)||0,mal=parseFloat(s.mal)||0,str=parseFloat(s.str)||0,km=parseFloat(s.km)||0;
+      rows.push({Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Tipo:tipoGiorno,Lavoro:calcolaLav(ob,fer,mal),'Ferie/Perm':fer,Malattia:mal,Straordinari:str,KM:km,Destinazione:s.dest||''});
+    } else if(tipo==='av_simple'){
+      const ore=parseFloat(s.ore)||0,km=parseFloat(s.km)||0;
+      rows.push({Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Tipo:tipoGiorno,'Ore lavoro':ore,KM:km,Destinazione:s.dest||''});
+    } else {
+      const ore=parseFloat(s.ore)||0,str=parseFloat(s.str)||0,not=parseFloat(s.ore_nott)||0;
+      rows.push({Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Tipo:tipoGiorno,'Ore lavoro':ore,Straordinari:str,Notturne:not});
+    }
+  }
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.json_to_sheet(rows);
+  XLSX.utils.book_append_sheet(wb,ws,MESI[m-1]+' '+y);
+  XLSX.writeFile(wb,`presenze_${utente.nome.replace(' ','_')}_${String(m).padStart(2,'0')}_${y}.xlsx`);
 }
 
-async function renderAdmin(){
-  document.getElementById('admin-mese-label').textContent = MESI[adminMeseC-1]+' '+adminAnnoC;
-  document.getElementById('admin-tbody').innerHTML = '<tr><td colspan="6" class="loading"><span class="spinner"></span>Caricamento...</td></tr>';
+// ── ADMIN ─────────────────────────────────────────────────────────
+function switchAdminTab(tab,btn){
+  document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('admin-pane-presenze').style.display=tab==='presenze'?'block':'none';
+  document.getElementById('admin-pane-accessi').style.display=tab==='accessi'?'block':'none';
+  if(tab==='accessi') renderAccessi();
+}
 
-  // carica stati e dati per tutti i dipendenti
-  const y=adminAnnoC, m=adminMeseC;
-  const statsPromises = DIPENDENTI.map(dip => caricaStato(dip.id, y, m));
-  const datiPromises  = DIPENDENTI.map(dip => caricaDati(dip.id, y, m));
-  const stati = await Promise.all(statsPromises);
-  const tuttiDati = await Promise.all(datiPromises);
-
-  let totL=0,totF=0,totM=0,totS=0,conf=0;
-  const datiPerDip = {};
-  DIPENDENTI.forEach((dip,i)=>{
-    datiPerDip[dip.id]={confermato:stati[i], dati:tuttiDati[i]||{}};
-    const t=calcTotaliDip(dip,tuttiDati[i]||{},y,m);
-    totL+=t.tL;totF+=t.tF;totM+=t.tM;totS+=t.tS;
-    if(stati[i]) conf++;
+function initAdminFiltro(){
+  const sel=document.getElementById('filtro-dip');
+  DIPENDENTI.forEach(d=>{
+    const o=document.createElement('option');o.value=d.id;o.textContent=d.nome;sel.appendChild(o);
   });
+}
 
+async function renderAccessi(){
+  const tbody=document.getElementById('accessi-tbody');
+  tbody.innerHTML='<tr><td colspan="4" class="loading"><span class="spinner"></span>Caricamento...</td></tr>';
+  const filtro=document.getElementById('filtro-dip').value;
+  let query=sb.from('log_accessi').select('*').order('created_at',{ascending:false}).limit(100);
+  if(filtro) query=query.eq('dip_id',filtro);
+  const {data,error}=await query;
+  if(error||!data||data.length===0){
+    tbody.innerHTML='<tr><td colspan="4" style="padding:1rem;color:#aaa;text-align:center">Nessun accesso registrato</td></tr>';
+    return;
+  }
+  tbody.innerHTML='';
+  data.forEach(r=>{
+    const dt=new Date(r.created_at);
+    const data_fmt=dt.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'});
+    const ora_fmt=dt.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="font-weight:500">${r.nome}</td><td>${data_fmt}</td><td>${ora_fmt}</td><td style="color:#888">${r.dispositivo||'—'}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+async function adminCambiaMese(dir){
+  adminMeseC+=dir;if(adminMeseC>12){adminMeseC=1;adminAnnoC++}if(adminMeseC<1){adminMeseC=12;adminAnnoC--}
+  adminExpanded=null;await renderAdmin();
+}
+async function renderAdmin(){
+  document.getElementById('admin-mese-label').textContent=MESI[adminMeseC-1]+' '+adminAnnoC;
+  document.getElementById('admin-tbody').innerHTML='<tr><td colspan="6" class="loading"><span class="spinner"></span>Caricamento...</td></tr>';
+  const y=adminAnnoC,m=adminMeseC;
+  const stati=await Promise.all(DIPENDENTI.map(d=>caricaStato(d.id,y,m)));
+  const tuttiDati=await Promise.all(DIPENDENTI.map(d=>caricaDati(d.id,y,m)));
+  let totL=0,totF=0,totM=0,totS=0,conf=0;
+  const datiPerDip={};
+  DIPENDENTI.forEach((dip,i)=>{
+    datiPerDip[dip.id]={confermato:stati[i],dati:tuttiDati[i]||{}};
+    const t=calcTotaliDip(dip,tuttiDati[i]||{},y,m);
+    totL+=t.tL;totF+=t.tF;totM+=t.tM;totS+=t.tS;if(stati[i]) conf++;
+  });
   document.getElementById('admin-completamento').textContent=`${conf}/${DIPENDENTI.length} confermati`;
   document.getElementById('admin-spill-row').innerHTML=`
     <div class="spill"><div class="spill-n">${totL.toFixed(1)}h</div><div class="spill-l">Lavoro</div></div>
@@ -623,20 +618,15 @@ async function renderAdmin(){
     <div class="spill"><div class="spill-n">${totM.toFixed(1)}h</div><div class="spill-l">Malattia</div></div>
     <div class="spill"><div class="spill-n">${totS.toFixed(1)}h</div><div class="spill-l">Straord.</div></div>
     <div class="spill"><div class="spill-n">${conf}/${DIPENDENTI.length}</div><div class="spill-l">Confermati</div></div>`;
-
-  renderAdminTabella(datiPerDip, y, m);
-  window._adminDati = datiPerDip;
+  renderAdminTabella(datiPerDip,y,m);
+  window._adminDati=datiPerDip;
 }
 
-function calcTotaliDip(dip, D, y, m){
+function calcTotaliDip(dip,D,y,m){
   const days=new Date(y,m,0).getDate();
   let tL=0,tF=0,tM=0,tS=0,tN=0,tKm=0;
   if(dip.tipo==='indeterminato'){
-    for(let d=1;d<=days;d++){
-      const ob=oreBase(y,m,d),s=D[d]||{};
-      const fer=parseFloat(s.fer)||0,mal=parseFloat(s.mal)||0;
-      tL+=calcolaLav(ob,fer,mal);tF+=fer;tM+=mal;tS+=parseFloat(s.str)||0;tKm+=parseFloat(s.km)||0;
-    }
+    for(let d=1;d<=days;d++){const ob=oreBase(y,m,d),s=D[d]||{};const fer=parseFloat(s.fer)||0,mal=parseFloat(s.mal)||0;tL+=calcolaLav(ob,fer,mal);tF+=fer;tM+=mal;tS+=parseFloat(s.str)||0;tKm+=parseFloat(s.km)||0;}
   } else if(dip.tipo==='av_simple'){
     for(let d=1;d<=days;d++){const s=D[d]||{};tL+=parseFloat(s.ore)||0;tKm+=parseFloat(s.km)||0;}
   } else {
@@ -645,22 +635,21 @@ function calcTotaliDip(dip, D, y, m){
   return {tL,tF,tM,tS,tN,tKm};
 }
 
-function renderAdminTabella(datiPerDip, y, m){
-  const tbody=document.getElementById('admin-tbody'); tbody.innerHTML='';
+function renderAdminTabella(datiPerDip,y,m){
+  const tbody=document.getElementById('admin-tbody');tbody.innerHTML='';
   DIPENDENTI.forEach(dip=>{
-    const {confermato, dati:D}=datiPerDip[dip.id];
+    const {confermato,dati:D}=datiPerDip[dip.id];
     const t=calcTotaliDip(dip,D,y,m);
     const hasDati=Object.keys(D).length>0;
     const stato=confermato?'confirmed':(hasDati?'draft':'empty');
     const badgeCls=stato==='confirmed'?'badge-ok':stato==='draft'?'badge-draft':'badge-empty';
     const badgeLbl=stato==='confirmed'?'Confermato':stato==='draft'?'Bozza':'Non inserito';
     const isOpen=adminExpanded===dip.id;
-
     const tr=document.createElement('tr');
     const td=document.createElement('td');td.colSpan=6;td.style.padding='0';
     const rowDiv=document.createElement('div');
     rowDiv.className='row-main'+(isOpen?' open':'');
-    rowDiv.onclick=()=>toggleAdminExpand(dip.id, datiPerDip, y, m);
+    rowDiv.onclick=()=>toggleAdminExpand(dip.id,datiPerDip,y,m);
     rowDiv.innerHTML=`
       <div class="dip-name">${dip.nome} <span class="dip-sub">${dip.tipo==='indeterminato'?'Ind.':'Avv.'}</span></div>
       <div class="cell-c"><span class="stato-badge ${badgeCls}">${badgeLbl}</span></div>
@@ -669,8 +658,7 @@ function renderAdminTabella(datiPerDip, y, m){
       <div class="cell-c">${hasDati&&dip.tipo==='indeterminato'?t.tM.toFixed(1)+'h':'—'}</div>
       <div class="cell-c">${hasDati&&dip.tipo==='indeterminato'?t.tS.toFixed(1)+'h':'—'}</div>
       <div class="chevron${isOpen?' open':''}">▾</div>`;
-    td.appendChild(rowDiv); tr.appendChild(td); tbody.appendChild(tr);
-
+    td.appendChild(rowDiv);tr.appendChild(td);tbody.appendChild(tr);
     const trExp=document.createElement('tr');
     const tdExp=document.createElement('td');tdExp.colSpan=6;tdExp.style.padding='0';
     const panel=document.createElement('div');
@@ -680,52 +668,47 @@ function renderAdminTabella(datiPerDip, y, m){
   });
 }
 
-function toggleAdminExpand(dipId, datiPerDip, y, m){
+function toggleAdminExpand(dipId,datiPerDip,y,m){
   adminExpanded=adminExpanded===dipId?null:dipId;
-  renderAdminTabella(datiPerDip, y, m);
-  window._adminDati=datiPerDip;
+  renderAdminTabella(datiPerDip,y,m);window._adminDati=datiPerDip;
 }
 
 function buildAdminDetail(dip,D,confermato,t,y,m){
   const hasDati=Object.keys(D).length>0;
   let html='<div class="detail-inner">';
   if(hasDati){
-    html+=`<div class="detail-grid">
-      <div class="dg-card"><div class="dg-n">${t.tL.toFixed(1)}h</div><div class="dg-l">Lavoro</div></div>`;
+    html+=`<div class="detail-grid"><div class="dg-card"><div class="dg-n">${t.tL.toFixed(1)}h</div><div class="dg-l">Lavoro</div></div>`;
     if(dip.tipo==='indeterminato'){
       html+=`<div class="dg-card"><div class="dg-n">${t.tF.toFixed(1)}h</div><div class="dg-l">Ferie/P.</div></div>
-      <div class="dg-card"><div class="dg-n">${t.tM.toFixed(1)}h</div><div class="dg-l">Malattia</div></div>
-      <div class="dg-card"><div class="dg-n">${t.tS.toFixed(1)}h</div><div class="dg-l">Straord.</div></div>`;
+             <div class="dg-card"><div class="dg-n">${t.tM.toFixed(1)}h</div><div class="dg-l">Malattia</div></div>
+             <div class="dg-card"><div class="dg-n">${t.tS.toFixed(1)}h</div><div class="dg-l">Straord.</div></div>`;
     } else if(dip.tipo==='av_full'){
       html+=`<div class="dg-card"><div class="dg-n">${t.tS.toFixed(1)}h</div><div class="dg-l">Straord.</div></div>
-      <div class="dg-card"><div class="dg-n">${t.tN.toFixed(1)}h</div><div class="dg-l">Notturne</div></div>`;
+             <div class="dg-card"><div class="dg-n">${t.tN.toFixed(1)}h</div><div class="dg-l">Notturne</div></div>`;
     }
     if(t.tKm>0) html+=`<div class="dg-card"><div class="dg-n">${t.tKm}</div><div class="dg-l">km</div></div>`;
     html+='</div>';
-    // tabella giorni con dati
+
+    const days=new Date(y,m,0).getDate();
     if(dip.tipo==='indeterminato'){
       html+=`<table class="day-det"><thead><tr><th>Giorno</th><th>Lav.</th><th>Ferie/P.</th><th>Mal.</th><th>Str.</th><th>km</th><th>Dest.</th></tr></thead><tbody>`;
-      const days=new Date(y,m,0).getDate();
       for(let d=1;d<=days;d++){
-        const w=dw(y,m,d),fest=isFestivo(y,m,d),ob=oreBase(y,m,d);
-        const s=D[d]||{};
+        const w=dw(y,m,d),fest=isFestivo(y,m,d),ob=oreBase(y,m,d),s=D[d]||{};
         const fer=parseFloat(s.fer)||0,mal=parseFloat(s.mal)||0,str=parseFloat(s.str)||0,km=parseFloat(s.km)||0;
-        const lav=calcolaLav(ob,fer,mal);
-        // mostra tutti i giorni inclusi weekend
-        const nf=nomeFest(y,m,d);
-        html+=`<tr><td>${GG[w]} ${String(d).padStart(2,'0')}${nf?' ('+nf+')':''}</td><td>${lav>0?lav+'h':'—'}</td><td>${fer>0?fer+'h':'—'}</td><td>${mal>0?mal+'h':'—'}</td><td>${str>0?str+'h':'—'}</td><td>${km>0?km:'—'}</td><td>${s.dest||'—'}</td></tr>`;
+        const lav=calcolaLav(ob,fer,mal),nf=nomeFest(y,m,d);
+        const isOff=(w===0||w===6)||fest;
+        html+=`<tr${isOff?' class="off-day"':''}><td>${GG[w]} ${String(d).padStart(2,'0')}${nf?' ('+nf+')':''}</td><td>${lav>0?lav+'h':'—'}</td><td>${fer>0?fer+'h':'—'}</td><td>${mal>0?mal+'h':'—'}</td><td>${str>0?str+'h':'—'}</td><td>${km>0?km:'—'}</td><td>${s.dest||'—'}</td></tr>`;
       }
       html+='</tbody></table>';
     } else {
-      html+=`<table class="day-det"><thead><tr><th>Giorno</th><th>Ore</th>${dip.tipo==='av_full'?'<th>Str.</th><th>Nott.</th>':''}<th>km</th><th>Dest.</th></tr></thead><tbody>`;
-      const days=new Date(y,m,0).getDate();
+      // avventizi: mostra tutti i giorni del mese
+      const hasStr=dip.tipo==='av_full';
+      html+=`<table class="day-det"><thead><tr><th>Giorno</th><th>Ore</th>${hasStr?'<th>Str.</th><th>Nott.</th>':''}<th>km</th><th>Dest.</th></tr></thead><tbody>`;
       for(let d=1;d<=days;d++){
-        const s=D[d]||{};
-        const ore=parseFloat(s.ore)||0;
-        if(!ore) continue;
-        const str=parseFloat(s.str)||0,not=parseFloat(s.ore_nott)||0,km=parseFloat(s.km)||0;
-        const w=dw(y,m,d);
-        html+=`<tr><td>${GG[w]} ${String(d).padStart(2,'0')}</td><td>${ore}h</td>${dip.tipo==='av_full'?`<td>${str>0?str+'h':'—'}</td><td>${not>0?not+'h':'—'}</td>`:''}<td>${km>0?km:'—'}</td><td>${s.dest||'—'}</td></tr>`;
+        const w=dw(y,m,d),fest=isFestivo(y,m,d),s=D[d]||{};
+        const ore=parseFloat(s.ore)||0,str=parseFloat(s.str)||0,not=parseFloat(s.ore_nott)||0,km=parseFloat(s.km)||0;
+        const nf=nomeFest(y,m,d),isOff=(w===0||w===6)||fest;
+        html+=`<tr${isOff?' class="off-day"':''}><td>${GG[w]} ${String(d).padStart(2,'0')}${nf?' ('+nf+')':''}</td><td>${ore>0?ore+'h':'—'}</td>${hasStr?`<td>${str>0?str+'h':'—'}</td><td>${not>0?not+'h':'—'}</td>`:''}<td>${km>0?km:'—'}</td><td>${s.dest||'—'}</td></tr>`;
       }
       html+='</tbody></table>';
     }
@@ -735,32 +718,32 @@ function buildAdminDetail(dip,D,confermato,t,y,m){
   html+=`<div style="display:flex;gap:8px;margin-top:.75rem">
     <button class="act-btn lock" onclick="adminToggleBlocco('${dip.id}',${y},${m},true)" ${confermato?'disabled style="opacity:.35;cursor:not-allowed"':''}>🔒 Blocca</button>
     <button class="act-btn unlock" onclick="adminToggleBlocco('${dip.id}',${y},${m},false)" ${!confermato?'disabled style="opacity:.35;cursor:not-allowed"':''}>🔓 Sblocca</button>
-  </div>`;
-  html+='</div>';
+  </div></div>`;
   return html;
 }
 
-async function adminToggleBlocco(dipId, y, m, lock){
-  await salvaStato(dipId, y, m, lock);
-  await renderAdmin();
+async function adminToggleBlocco(dipId,y,m,lock){
+  await salvaStato(dipId,y,m,lock);await renderAdmin();
 }
 
-// ── EXPORT ────────────────────────────────────────────────────────
+// ── EXPORT ADMIN ──────────────────────────────────────────────────
 function buildRigheExport(){
-  const y=adminAnnoC,m=adminMeseC;
-  const D=window._adminDati||{};
+  const y=adminAnnoC,m=adminMeseC,D=window._adminDati||{};
   const rows=[];
   DIPENDENTI.forEach(dip=>{
-    const dd=D[dip.id]?.dati||{};
-    const days=new Date(y,m,0).getDate();
+    const dd=D[dip.id]?.dati||{},days=new Date(y,m,0).getDate();
     for(let d=1;d<=days;d++){
-      const w=dw(y,m,d),fest=isFestivo(y,m,d),ob=oreBase(y,m,d);
-      const s=dd[d]||{};
+      const w=dw(y,m,d),ob=oreBase(y,m,d),s=dd[d]||{};
       if(dip.tipo==='indeterminato'){
         const fer=parseFloat(s.fer)||0,mal=parseFloat(s.mal)||0,str=parseFloat(s.str)||0,km=parseFloat(s.km)||0;
-        const lav=calcolaLav(ob,fer,mal);
-        rows.push({Matricola:dip.matricola,Dipendente:dip.nome,Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Lavoro:lav,'Ferie/Permessi':fer,Malattia:mal,Straordinari:str,KM:km,Destinazione:s.dest||'',Stato:D[dip.id]?.confermato?'Confermato':'Bozza'});
+        rows.push({Matricola:dip.matricola,Dipendente:dip.nome,Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Lavoro:calcolaLav(ob,fer,mal),'Ferie/Permessi':fer,Malattia:mal,Straordinari:str,KM:km,Destinazione:s.dest||'',Stato:D[dip.id]?.confermato?'Confermato':'Bozza'});
+      } else if(dip.tipo==='av_simple'){
+        // Zanier: NO notturne
+        const ore=parseFloat(s.ore)||0;
+        if(!ore) continue;
+        rows.push({Matricola:dip.matricola,Dipendente:dip.nome,Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Lavoro:ore,KM:parseFloat(s.km)||0,Destinazione:s.dest||'',Stato:D[dip.id]?.confermato?'Confermato':'Bozza'});
       } else {
+        // av_full: con notturne
         const ore=parseFloat(s.ore)||0;
         if(!ore) continue;
         rows.push({Matricola:dip.matricola,Dipendente:dip.nome,Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Lavoro:ore,Straordinari:parseFloat(s.str)||0,Notturne:parseFloat(s.ore_nott)||0,KM:parseFloat(s.km)||0,Destinazione:s.dest||'',Stato:D[dip.id]?.confermato?'Confermato':'Bozza'});
@@ -775,11 +758,9 @@ function exportExcel(){
   const wb=XLSX.utils.book_new();
   const righe=buildRigheExport();
   const ws=XLSX.utils.json_to_sheet(righe);
-  ws['!cols']=[{wch:10},{wch:20},{wch:12},{wch:6},{wch:7},{wch:14},{wch:9},{wch:12},{wch:6},{wch:16},{wch:12}];
   XLSX.utils.book_append_sheet(wb,ws,'Presenze');
   XLSX.writeFile(wb,`presenze_${String(adminMeseC).padStart(2,'0')}_${adminAnnoC}.xlsx`);
 }
-
 function exportCSVZucchetti(){
   const righe=buildRigheExport();
   const rows=['Matricola,Data,CodVoce,Ore,Note,Destinazione'];
@@ -796,24 +777,25 @@ function exportCSVZucchetti(){
   const a=document.createElement('a');a.href=url;a.download=`zucchetti_${String(adminMeseC).padStart(2,'0')}_${adminAnnoC}.csv`;a.click();
   URL.revokeObjectURL(url);
 }
-
 function exportGoogleSheets(){
   const righe=buildRigheExport();
   const keys=righe.length?Object.keys(righe[0]):[];
   const tsv=[keys.join('\t'),...righe.map(r=>keys.map(k=>r[k]??'').join('\t'))].join('\n');
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(tsv).then(()=>{
-      alert('Dati copiati!\n\n1. Apri sheets.new\n2. Seleziona cella A1\n3. Incolla con Ctrl+V');
-    }).catch(()=>{alert('Copia manuale: apri sheets.new e incolla i dati.')});
-  }
+  if(navigator.clipboard){navigator.clipboard.writeText(tsv).then(()=>{alert('Dati copiati!\n\n1. Apri sheets.new\n2. Seleziona cella A1\n3. Incolla con Ctrl+V');}).catch(()=>{alert('Apri sheets.new e incolla i dati.');});}
 }
 
-// Seleziona tutto il testo al focus su input numerici
-document.addEventListener('focusin', function(e){
-  if(e.target && e.target.type === 'number'){
-    setTimeout(()=>{ e.target.select(); }, 50);
-  }
+// Seleziona tutto al focus su input numerici
+document.addEventListener('focusin',function(e){
+  if(e.target&&e.target.type==='number'){setTimeout(()=>{e.target.select();},50);}
 });
+
+// Ping anti-pausa Supabase
+(function(){
+  const last=parseInt(localStorage.getItem('lastPing')||'0');
+  if(Date.now()-last>5*24*60*60*1000){
+    sb.from('stati_mese').select('id').limit(1).then(()=>{localStorage.setItem('lastPing',Date.now().toString());});
+  }
+})();
 </script>
 </body>
 </html>
