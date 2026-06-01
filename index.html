@@ -541,13 +541,13 @@ async function exportExcelDipendente(){
     const tipoGiorno=(w===0||w===6)?'Weekend':fest?nf||'Festivo':'Lavorativo';
     if(tipo==='indeterminato'){
       const fer=parseFloat(s.fer)||0,mal=parseFloat(s.mal)||0,str=parseFloat(s.str)||0,km=parseFloat(s.km)||0;
-      rows.push({Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Tipo:tipoGiorno,Lavoro:calcolaLav(ob,fer,mal),'Ferie/Perm':fer,Malattia:mal,Straordinari:str,KM:km,Destinazione:s.dest||''});
+      rows.push({Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Lavoro:calcolaLav(ob,fer,mal),'Ferie/Perm':fer,Malattia:mal,Straordinari:str,KM:km,Destinazione:s.dest||''});
     } else if(tipo==='av_simple'){
       const ore=parseFloat(s.ore)||0,km=parseFloat(s.km)||0;
-      rows.push({Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Tipo:tipoGiorno,'Ore lavoro':ore,KM:km,Destinazione:s.dest||''});
+      rows.push({Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],'Ore lavoro':ore,KM:km,Destinazione:s.dest||''});
     } else {
       const ore=parseFloat(s.ore)||0,str=parseFloat(s.str)||0,not=parseFloat(s.ore_nott)||0;
-      rows.push({Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Tipo:tipoGiorno,'Ore lavoro':ore,Straordinari:str,Notturne:not});
+      rows.push({Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],'Ore lavoro':ore,Straordinari:str,Notturne:not});
     }
   }
   const wb=XLSX.utils.book_new();
