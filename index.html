@@ -405,9 +405,9 @@ function renderCalendario(blk,D){
   const tipo=utente.tipo;
   const thead=document.getElementById('thead-row');
   let theadHTML='';
-  if(tipo==='indeterminato') theadHTML='<th>Giorno</th><th>Lav.</th><th>Fer./Perm.</th><th>Mal.</th><th>Str.</th><th>km</th><th>Destinazione</th>';
-  else if(tipo==='av_simple') theadHTML='<th>Giorno</th><th>Ore lav.</th><th>km</th><th>Destinazione</th>';
-  else theadHTML='<th>Giorno</th><th>Ore lav.</th><th>Straord.</th><th>Notturne</th>';
+  if(tipo==='indeterminato') theadHTML='<th>Giorno</th><th>Lav.</th><th>Fer./Perm.</th><th>Mal.</th><th>Str.</th><th>km</th><th>Destinazione</th><th>Note</th>';
+  else if(tipo==='av_simple') theadHTML='<th>Giorno</th><th>Ore lav.</th><th>km</th><th>Destinazione</th><th>Note</th>';
+  else theadHTML='<th>Giorno</th><th>Ore lav.</th><th>Straord.</th><th>Notturne</th><th>Note</th>';
   thead.innerHTML=theadHTML;
   const tbody=document.getElementById('tbody-main');tbody.innerHTML='';
   let tL=0,tF=0,tM=0,tS=0,tN=0,tKm=0;
@@ -429,21 +429,21 @@ function renderCalendario(blk,D){
         <td><input type="number" inputmode="decimal" class="ni" min="0" max="${ob}" step="0.5" value="${mal||''}" placeholder="—" onchange="salvaField(${d},'mal',this.value,'fermal',${ob})" ${disGiorno}></td>
         <td><input type="number" inputmode="decimal" class="ni" min="0" max="12" step="0.5" value="${str||''}" placeholder="—" onchange="salvaField(${d},'str',this.value)" ${disGiorno}></td>
         <td><input type="number" inputmode="decimal" class="ni" min="0" step="1" value="${km||''}" placeholder="—" onchange="salvaField(${d},'km',this.value)" ${disGiorno}></td>
-        <td><input class="di" type="text" value="${s.dest||''}" placeholder="Destinazione" onchange="salvaField(${d},'dest',this.value)" ${disGiorno}></td>`;
+        <td><input class="di" type="text" value="${s.dest||''}" placeholder="Destinazione" onchange="salvaField(${d},'dest',this.value)" ${disGiorno}></td><td><input class="di" type="text" value="${s.note||''}" placeholder="Note" onchange="salvaField(${d},'note',this.value)" ${disGiorno}></td>`;
     } else if(tipo==='av_simple'){
       const ore=parseFloat(s.ore)||0,km=parseFloat(s.km)||0;
       tL+=ore;tKm+=km;
       tr.innerHTML=`<td>${dayCell}</td>
         <td><input type="number" inputmode="decimal" class="ni" min="0" max="24" step="0.5" value="${ore||''}" placeholder="—" onchange="salvaField(${d},'ore',this.value)" ${disGiorno}></td>
         <td><input type="number" inputmode="decimal" class="ni" min="0" step="1" value="${km||''}" placeholder="—" onchange="salvaField(${d},'km',this.value)" ${disGiorno}></td>
-        <td><input class="di" type="text" value="${s.dest||''}" placeholder="Destinazione" onchange="salvaField(${d},'dest',this.value)" ${disGiorno}></td>`;
+        <td><input class="di" type="text" value="${s.dest||''}" placeholder="Destinazione" onchange="salvaField(${d},'dest',this.value)" ${disGiorno}></td><td><input class="di" type="text" value="${s.note||''}" placeholder="Note" onchange="salvaField(${d},'note',this.value)" ${disGiorno}></td>`;
     } else {
       const ore=parseFloat(s.ore)||0,str=parseFloat(s.str)||0,not=parseFloat(s.ore_nott)||0;
       tL+=ore;tS+=str;tN+=not;
       tr.innerHTML=`<td>${dayCell}</td>
         <td><input type="number" inputmode="decimal" class="ni" min="0" max="24" step="0.5" value="${ore||''}" placeholder="—" onchange="salvaField(${d},'ore',this.value)" ${disGiorno}></td>
         <td><input type="number" inputmode="decimal" class="ni" min="0" max="12" step="0.5" value="${str||''}" placeholder="—" onchange="salvaField(${d},'str',this.value)" ${disGiorno}></td>
-        <td><input type="number" inputmode="decimal" class="ni" min="0" max="12" step="0.5" value="${not||''}" placeholder="—" onchange="salvaField(${d},'ore_nott',this.value)" ${disGiorno}></td>`;
+        <td><input type="number" inputmode="decimal" class="ni" min="0" max="12" step="0.5" value="${not||''}" placeholder="—" onchange="salvaField(${d},'ore_nott',this.value)" ${disGiorno}></td><td><input class="di" type="text" value="${s.note||''}" placeholder="Note" onchange="salvaField(${d},'note',this.value)" ${disGiorno}></td>`;
     }
     tbody.appendChild(tr);
   }
@@ -541,13 +541,13 @@ async function exportExcelDipendente(){
     const tipoGiorno=(w===0||w===6)?'Weekend':fest?nf||'Festivo':'Lavorativo';
     if(tipo==='indeterminato'){
       const fer=parseFloat(s.fer)||0,mal=parseFloat(s.mal)||0,str=parseFloat(s.str)||0,km=parseFloat(s.km)||0;
-      rows.push({Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Lavoro:calcolaLav(ob,fer,mal),'Ferie/Perm':fer,Malattia:mal,Straordinari:str,KM:km,Destinazione:s.dest||''});
+      rows.push({Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Lavoro:calcolaLav(ob,fer,mal),'Ferie/Perm':fer,Malattia:mal,Straordinari:str,KM:km,Destinazione:s.dest||'',Note:s.note||''});
     } else if(tipo==='av_simple'){
       const ore=parseFloat(s.ore)||0,km=parseFloat(s.km)||0;
-      rows.push({Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],'Ore lavoro':ore,KM:km,Destinazione:s.dest||''});
+      rows.push({Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],'Ore lavoro':ore,KM:km,Destinazione:s.dest||'',Note:s.note||''});
     } else {
       const ore=parseFloat(s.ore)||0,str=parseFloat(s.str)||0,not=parseFloat(s.ore_nott)||0;
-      rows.push({Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],'Ore lavoro':ore,Straordinari:str,Notturne:not});
+      rows.push({Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],'Ore lavoro':ore,Straordinari:str,Notturne:not,Note:s.note||''});
     }
   }
   const wb=XLSX.utils.book_new();
@@ -736,17 +736,17 @@ function buildRigheExport(){
       const w=dw(y,m,d),ob=oreBase(y,m,d),s=dd[d]||{};
       if(dip.tipo==='indeterminato'){
         const fer=parseFloat(s.fer)||0,mal=parseFloat(s.mal)||0,str=parseFloat(s.str)||0,km=parseFloat(s.km)||0;
-        rows.push({Matricola:dip.matricola,Dipendente:dip.nome,Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Lavoro:calcolaLav(ob,fer,mal),'Ferie/Permessi':fer,Malattia:mal,Straordinari:str,KM:km,Destinazione:s.dest||'',Stato:D[dip.id]?.confermato?'Confermato':'Bozza'});
+        rows.push({Matricola:dip.matricola,Dipendente:dip.nome,Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Lavoro:calcolaLav(ob,fer,mal),'Ferie/Permessi':fer,Malattia:mal,Straordinari:str,KM:km,Destinazione:s.dest||'',Note:s.note||'',Stato:D[dip.id]?.confermato?'Confermato':'Bozza'});
       } else if(dip.tipo==='av_simple'){
         // Zanier: NO notturne
         const ore=parseFloat(s.ore)||0;
         if(!ore) continue;
-        rows.push({Matricola:dip.matricola,Dipendente:dip.nome,Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Lavoro:ore,KM:parseFloat(s.km)||0,Destinazione:s.dest||'',Stato:D[dip.id]?.confermato?'Confermato':'Bozza'});
+        rows.push({Matricola:dip.matricola,Dipendente:dip.nome,Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Lavoro:ore,KM:parseFloat(s.km)||0,Destinazione:s.dest||'',Note:s.note||'',Stato:D[dip.id]?.confermato?'Confermato':'Bozza'});
       } else {
         // av_full: con notturne
         const ore=parseFloat(s.ore)||0;
         if(!ore) continue;
-        rows.push({Matricola:dip.matricola,Dipendente:dip.nome,Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Lavoro:ore,Straordinari:parseFloat(s.str)||0,Notturne:parseFloat(s.ore_nott)||0,KM:parseFloat(s.km)||0,Destinazione:s.dest||'',Stato:D[dip.id]?.confermato?'Confermato':'Bozza'});
+        rows.push({Matricola:dip.matricola,Dipendente:dip.nome,Data:`${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`,Giorno:GG[w],Lavoro:ore,Straordinari:parseFloat(s.str)||0,Notturne:parseFloat(s.ore_nott)||0,KM:parseFloat(s.km)||0,Destinazione:s.dest||'',Note:s.note||'',Stato:D[dip.id]?.confermato?'Confermato':'Bozza'});
       }
     }
   });
