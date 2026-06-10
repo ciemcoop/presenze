@@ -789,12 +789,21 @@ document.addEventListener('focusin',function(e){
   if(e.target&&e.target.type==='number'){setTimeout(()=>{e.target.select();},50);}
 });
 
-// Ping anti-pausa Supabase
+// Ping anti-pausa Supabase — ogni 4 giorni
+async function pingKeepAlive(){
+  try{
+    await sb.from('stati_mese').select('id').limit(1);
+    localStorage.setItem('lastPing', Date.now().toString());
+  }catch(e){}
+}
 (function(){
+  const quattroGiorni=4*24*60*60*1000;
   const last=parseInt(localStorage.getItem('lastPing')||'0');
-  if(Date.now()-last>5*24*60*60*1000){
-    sb.from('stati_mese').select('id').limit(1).then(()=>{localStorage.setItem('lastPing',Date.now().toString());});
-  }
+  if(Date.now()-last>quattroGiorni) pingKeepAlive();
+  setInterval(()=>{
+    const l=parseInt(localStorage.getItem('lastPing')||'0');
+    if(Date.now()-l>quattroGiorni) pingKeepAlive();
+  }, 60*60*1000);
 })();
 </script>
 </body>
