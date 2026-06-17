@@ -346,7 +346,7 @@ async function doLogin(){
     renderAdmin();
     return;
   }
-  const dip=DIPENDENTI.find(d=>d.cf===cf);
+  const dip=DIPENDENTI.find(d=>d.cf===cf || (cf==='GIO' && d.id==='DP01'));
   if(!dip){errEl.textContent='Codice fiscale non trovato. Contatta l\'ufficio.';return;}
   const btn=document.getElementById('btn-login');btn.disabled=true;btn.textContent='Accesso...';
   utente=dip;
@@ -470,7 +470,7 @@ let pendingFields={};
 async function salvaField(d,field,val,modalita,ob){
   if(bloccato) return;
   if(!pendingFields[d]) pendingFields[d]={};
-  pendingFields[d][field]=field==='dest'?val:(parseFloat(val)||0);
+  pendingFields[d][field]=(field==='dest'||field==='note')?val:(parseFloat(val)||0);
   if(modalita==='fermal'){
     const fer=parseFloat(pendingFields[d].fer??(document.getElementById('tbody-main').rows[d-1]?.cells[2]?.querySelector('input')?.value))||0;
     const mal=parseFloat(pendingFields[d].mal??(document.getElementById('tbody-main').rows[d-1]?.cells[3]?.querySelector('input')?.value))||0;
@@ -691,24 +691,24 @@ function buildAdminDetail(dip,D,confermato,t,y,m){
 
     const days=new Date(y,m,0).getDate();
     if(dip.tipo==='indeterminato'){
-      html+=`<table class="day-det"><thead><tr><th>Giorno</th><th>Lav.</th><th>Ferie/P.</th><th>Mal.</th><th>Str.</th><th>km</th><th>Dest.</th></tr></thead><tbody>`;
+      html+=`<table class="day-det"><thead><tr><th>Giorno</th><th>Lav.</th><th>Ferie/P.</th><th>Mal.</th><th>Str.</th><th>km</th><th>Dest.</th><th>Note</th></tr></thead><tbody>`;
       for(let d=1;d<=days;d++){
         const w=dw(y,m,d),fest=isFestivo(y,m,d),ob=oreBase(y,m,d),s=D[d]||{};
         const fer=parseFloat(s.fer)||0,mal=parseFloat(s.mal)||0,str=parseFloat(s.str)||0,km=parseFloat(s.km)||0;
         const lav=calcolaLav(ob,fer,mal),nf=nomeFest(y,m,d);
         const isOff=(w===0||w===6)||fest;
-        html+=`<tr${isOff?' class="off-day"':''}><td>${GG[w]} ${String(d).padStart(2,'0')}${nf?' ('+nf+')':''}</td><td>${lav>0?lav+'h':'—'}</td><td>${fer>0?fer+'h':'—'}</td><td>${mal>0?mal+'h':'—'}</td><td>${str>0?str+'h':'—'}</td><td>${km>0?km:'—'}</td><td>${s.dest||'—'}</td></tr>`;
+        html+=`<tr${isOff?' class="off-day"':''}><td>${GG[w]} ${String(d).padStart(2,'0')}${nf?' ('+nf+')':''}</td><td>${lav>0?lav+'h':'—'}</td><td>${fer>0?fer+'h':'—'}</td><td>${mal>0?mal+'h':'—'}</td><td>${str>0?str+'h':'—'}</td><td>${km>0?km:'—'}</td><td>${s.dest||'—'}</td><td>${s.note||'—'}</td></tr>`;
       }
       html+='</tbody></table>';
     } else {
       // avventizi: mostra tutti i giorni del mese
       const hasStr=dip.tipo==='av_full';
-      html+=`<table class="day-det"><thead><tr><th>Giorno</th><th>Ore</th>${hasStr?'<th>Str.</th><th>Nott.</th>':''}<th>km</th><th>Dest.</th></tr></thead><tbody>`;
+      html+=`<table class="day-det"><thead><tr><th>Giorno</th><th>Ore</th>${hasStr?'<th>Str.</th><th>Nott.</th>':''}<th>km</th><th>Dest.</th><th>Note</th></tr></thead><tbody>`;
       for(let d=1;d<=days;d++){
         const w=dw(y,m,d),fest=isFestivo(y,m,d),s=D[d]||{};
         const ore=parseFloat(s.ore)||0,str=parseFloat(s.str)||0,not=parseFloat(s.ore_nott)||0,km=parseFloat(s.km)||0;
         const nf=nomeFest(y,m,d),isOff=(w===0||w===6)||fest;
-        html+=`<tr${isOff?' class="off-day"':''}><td>${GG[w]} ${String(d).padStart(2,'0')}${nf?' ('+nf+')':''}</td><td>${ore>0?ore+'h':'—'}</td>${hasStr?`<td>${str>0?str+'h':'—'}</td><td>${not>0?not+'h':'—'}</td>`:''}<td>${km>0?km:'—'}</td><td>${s.dest||'—'}</td></tr>`;
+        html+=`<tr${isOff?' class="off-day"':''}><td>${GG[w]} ${String(d).padStart(2,'0')}${nf?' ('+nf+')':''}</td><td>${ore>0?ore+'h':'—'}</td>${hasStr?`<td>${str>0?str+'h':'—'}</td><td>${not>0?not+'h':'—'}</td>`:''}<td>${km>0?km:'—'}</td><td>${s.dest||'—'}</td><td>${s.note||'—'}</td></tr>`;
       }
       html+='</tbody></table>';
     }
