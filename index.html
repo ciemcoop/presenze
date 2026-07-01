@@ -425,25 +425,25 @@ function renderCalendario(blk,D){
       tL+=lav;tF+=fer;tM+=mal;tS+=str;tKm+=km;
       tr.innerHTML=`<td>${dayCell}</td>
         <td><input type="number" inputmode="decimal" class="ni auto" id="lav-${d}" value="${lav}" readonly tabindex="-1"></td>
-        <td><input type="number" inputmode="decimal" class="ni" min="0" max="${ob}" step="0.5" value="${fer||''}" placeholder="—" onchange="salvaField(${d},'fer',this.value,'fermal',${ob})" ${disGiorno}></td>
-        <td><input type="number" inputmode="decimal" class="ni" min="0" max="${ob}" step="0.5" value="${mal||''}" placeholder="—" onchange="salvaField(${d},'mal',this.value,'fermal',${ob})" ${disGiorno}></td>
-        <td><input type="number" inputmode="decimal" class="ni" min="0" max="12" step="0.5" value="${str||''}" placeholder="—" onchange="salvaField(${d},'str',this.value)" ${disGiorno}></td>
-        <td><input type="number" inputmode="decimal" class="ni" min="0" step="1" value="${km||''}" placeholder="—" onchange="salvaField(${d},'km',this.value)" ${disGiorno}></td>
-        <td><input class="di" type="text" value="${s.dest||''}" placeholder="Destinazione" onchange="salvaField(${d},'dest',this.value)" ${disGiorno}></td><td><input class="di" type="text" value="${s.note||''}" placeholder="Note" onchange="salvaField(${d},'note',this.value)" ${disGiorno}></td>`;
+        <td><input type="number" inputmode="decimal" class="ni" min="0" max="${ob}" step="0.5" value="${fer||''}" placeholder="—" oninput="salvaField(${d},'fer',this.value,'fermal',${ob})" ${disGiorno}></td>
+        <td><input type="number" inputmode="decimal" class="ni" min="0" max="${ob}" step="0.5" value="${mal||''}" placeholder="—" oninput="salvaField(${d},'mal',this.value,'fermal',${ob})" ${disGiorno}></td>
+        <td><input type="number" inputmode="decimal" class="ni" min="0" max="12" step="0.5" value="${str||''}" placeholder="—" oninput="salvaField(${d},'str',this.value)" ${disGiorno}></td>
+        <td><input type="number" inputmode="decimal" class="ni" min="0" step="1" value="${km||''}" placeholder="—" oninput="salvaField(${d},'km',this.value)" ${disGiorno}></td>
+        <td><input class="di" type="text" value="${s.dest||''}" placeholder="Destinazione" oninput="salvaField(${d},'dest',this.value)" ${disGiorno}></td><td><input class="di" type="text" value="${s.note||''}" placeholder="Note" oninput="salvaField(${d},'note',this.value)" ${disGiorno}></td>`;
     } else if(tipo==='av_simple'){
       const ore=parseFloat(s.ore)||0,km=parseFloat(s.km)||0;
       tL+=ore;tKm+=km;
       tr.innerHTML=`<td>${dayCell}</td>
-        <td><input type="number" inputmode="decimal" class="ni" min="0" max="24" step="0.5" value="${ore||''}" placeholder="—" onchange="salvaField(${d},'ore',this.value)" ${disGiorno}></td>
-        <td><input type="number" inputmode="decimal" class="ni" min="0" step="1" value="${km||''}" placeholder="—" onchange="salvaField(${d},'km',this.value)" ${disGiorno}></td>
-        <td><input class="di" type="text" value="${s.dest||''}" placeholder="Destinazione" onchange="salvaField(${d},'dest',this.value)" ${disGiorno}></td><td><input class="di" type="text" value="${s.note||''}" placeholder="Note" onchange="salvaField(${d},'note',this.value)" ${disGiorno}></td>`;
+        <td><input type="number" inputmode="decimal" class="ni" min="0" max="24" step="0.5" value="${ore||''}" placeholder="—" oninput="salvaField(${d},'ore',this.value)" ${disGiorno}></td>
+        <td><input type="number" inputmode="decimal" class="ni" min="0" step="1" value="${km||''}" placeholder="—" oninput="salvaField(${d},'km',this.value)" ${disGiorno}></td>
+        <td><input class="di" type="text" value="${s.dest||''}" placeholder="Destinazione" oninput="salvaField(${d},'dest',this.value)" ${disGiorno}></td><td><input class="di" type="text" value="${s.note||''}" placeholder="Note" oninput="salvaField(${d},'note',this.value)" ${disGiorno}></td>`;
     } else {
       const ore=parseFloat(s.ore)||0,str=parseFloat(s.str)||0,not=parseFloat(s.ore_nott)||0;
       tL+=ore;tS+=str;tN+=not;
       tr.innerHTML=`<td>${dayCell}</td>
-        <td><input type="number" inputmode="decimal" class="ni" min="0" max="24" step="0.5" value="${ore||''}" placeholder="—" onchange="salvaField(${d},'ore',this.value)" ${disGiorno}></td>
-        <td><input type="number" inputmode="decimal" class="ni" min="0" max="12" step="0.5" value="${str||''}" placeholder="—" onchange="salvaField(${d},'str',this.value)" ${disGiorno}></td>
-        <td><input type="number" inputmode="decimal" class="ni" min="0" max="12" step="0.5" value="${not||''}" placeholder="—" onchange="salvaField(${d},'ore_nott',this.value)" ${disGiorno}></td><td><input class="di" type="text" value="${s.note||''}" placeholder="Note" onchange="salvaField(${d},'note',this.value)" ${disGiorno}></td>`;
+        <td><input type="number" inputmode="decimal" class="ni" min="0" max="24" step="0.5" value="${ore||''}" placeholder="—" oninput="salvaField(${d},'ore',this.value)" ${disGiorno}></td>
+        <td><input type="number" inputmode="decimal" class="ni" min="0" max="12" step="0.5" value="${str||''}" placeholder="—" oninput="salvaField(${d},'str',this.value)" ${disGiorno}></td>
+        <td><input type="number" inputmode="decimal" class="ni" min="0" max="12" step="0.5" value="${not||''}" placeholder="—" oninput="salvaField(${d},'ore_nott',this.value)" ${disGiorno}></td><td><input class="di" type="text" value="${s.note||''}" placeholder="Note" oninput="salvaField(${d},'note',this.value)" ${disGiorno}></td>`;
     }
     tbody.appendChild(tr);
   }
