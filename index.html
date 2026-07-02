@@ -378,6 +378,14 @@ function setStatus(stato){
 
 // ── RENDER PRESENZE ───────────────────────────────────────────────
 async function cambiaMese(dir){
+  // Salva subito eventuali dati in sospeso prima di cambiare mese
+  clearTimeout(autosaveTimer);
+  if(Object.keys(pendingFields).length>0){
+    for(const [giorno,fields] of Object.entries(pendingFields)){
+      await salvaDato(utente.id,annoC,meseC,parseInt(giorno),fields);
+    }
+    pendingFields={};
+  }
   meseC+=dir;if(meseC>12){meseC=1;annoC++}if(meseC<1){meseC=12;annoC--}
   await renderPresenze();
 }
