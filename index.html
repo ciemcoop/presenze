@@ -478,7 +478,8 @@ let pendingFields={};
 async function salvaField(d,field,val,modalita,ob){
   if(bloccato) return;
   if(!pendingFields[d]) pendingFields[d]={};
-  pendingFields[d][field]=(field==='dest'||field==='note')?val:(parseFloat(val)||0);
+  const valClean = (typeof val==='string')?val.replace(',','.'):val;
+  pendingFields[d][field]=(field==='dest'||field==='note')?val:(parseFloat(valClean)||0);
   if(modalita==='fermal'){
     const fer=parseFloat(pendingFields[d].fer??(document.getElementById('tbody-main').rows[d-1]?.cells[2]?.querySelector('input')?.value))||0;
     const mal=parseFloat(pendingFields[d].mal??(document.getElementById('tbody-main').rows[d-1]?.cells[3]?.querySelector('input')?.value))||0;
